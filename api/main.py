@@ -8,7 +8,6 @@ app = FastAPI(
     version=settings.APP_VERSION,
     debug=settings.DEBUG
 )
-
 # Register routes
 app.include_router(health_router, tags=["Health"])
 app.include_router(summarize_router, tags=["Summarize"])

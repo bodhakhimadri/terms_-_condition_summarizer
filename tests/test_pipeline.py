@@ -5,5 +5,12 @@ def test_pipeline_with_text():
 
     result = run_pipeline(text=sample_text)
 
+    assert isinstance(result, dict)
     assert "summary" in result
+    assert "key_points" in result
+    assert "risk_notes" in result
+
     assert isinstance(result["summary"], str)
+    assert isinstance(result["key_points"], list)
+    assert isinstance(result["risk_notes"], list)
+

@@ -2,4 +2,6 @@ requests
 fastapi
 dotenv
 bs4
+typing
+pydantic
 

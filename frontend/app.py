@@ -1,90 +1,63 @@
 import streamlit as st
 import requests
 
-# -------------------------------
-# Configuration
-# -------------------------------
-API_URL = "http://127.0.0.1:8000/summarize"
+BACKEND_URL = "http://localhost:8000/api/summarize"
 
 st.set_page_config(
-    page_title="T&C Summarizer",
+    page_title="Terms & Conditions Summarizer",
+    page_icon="📄",
     layout="centered"
 )
 
-# -------------------------------
-# UI Header
-# -------------------------------
 st.title("📄 Terms & Conditions Summarizer")
-st.write(
-    "Paste **Terms & Conditions text** or provide a **URL**, and get a simplified summary using LLM."
-)
+st.write("Paste Terms & Conditions text OR provide a website URL to get a simplified summary.")
 
-# -------------------------------
-# Input Section
-# -------------------------------
 input_type = st.radio(
-    "Choose Input Type:",
-    ["Text", "URL"]
+    "Choose input type:",
+    ("Paste Text", "Website URL")
 )
 
-text_input = None
-url_input = None
+text = None
+url = None
 
-if input_type == "Text":
-    text_input = st.text_area(
+if input_type == "Paste Text":
+    text = st.text_area(
         "Paste Terms & Conditions text here:",
         height=250
     )
 else:
-    url_input = st.text_input(
-        "Enter Terms & Conditions URL:"
+    url = st.text_input(
+        "Enter Terms & Conditions website URL:"
     )
 
-summary_type = st.selectbox(
-    "Select Summary Type:",
-    ["simple", "simplified", "risk"]
-)
-
-# -------------------------------
-# Submit Button
-# -------------------------------
-if st.button("🔍 Generate Summary"):
-    if not text_input and not url_input:
-        st.warning("Please provide text or a URL.")
+if st.button("Summarize"):
+    if not text and not url:
+        st.error("Please provide text or a URL.")
     else:
         payload = {
-            "text": text_input,
-            "url": url_input,
-            "summary_type": summary_type
+            "text": text,
+            "url": url,
+            "summary_type": "simple"
         }
 
-        try:
-            with st.spinner("Summarizing..."):
-                response = requests.post(API_URL, json=payload, timeout=60)
+        with st.spinner("Summarizing..."):
+            response = requests.post(BACKEND_URL, json=payload)
 
-            if response.status_code == 200:
-                data = response.json()
+        if response.status_code == 200:
+            data = response.json()
 
-                st.success("Summary Generated Successfully!")
+            st.subheader("📌 Summary")
+            st.write(data["summary"])
 
-                # -------------------------------
-                # Output Section
-                # -------------------------------
-                st.subheader("📝 Summary")
-                st.write(data.get("summary", ""))
+            st.subheader("🔑 Key Points")
+            for point in data["key_points"]:
+                st.markdown(f"- {point}")
 
-                if data.get("key_points"):
-                    st.subheader("📌 Key Points")
-                    for point in data["key_points"]:
-                        st.write(f"- {point}")
-
-                if data.get("risk_notes"):
-                    st.subheader("⚠️ Risk Notes")
-                    for risk in data["risk_notes"]:
-                        st.write(f"- {risk}")
-
+            st.subheader("⚠️ Risk Notes")
+            if data["risk_notes"]:
+                for risk in data["risk_notes"]:
+                    st.markdown(f"- {risk}")
             else:
-                st.error(f"API Error: {response.text}")
-
-        except Exception as e:
-            st.error(f"Connection error: {e}")
+                st.write("No major risks identified.")
+        else:
+            st.error("Something went wrong. Please try again.")

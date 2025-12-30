@@ -4,4 +4,4 @@ dotenv
 bs4
 typing
 pydantic
-
+streamlit

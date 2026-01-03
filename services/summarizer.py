@@ -1,13 +1,25 @@
-def summarize_chunks(chunks, prompt, summary_type):
-    summaries = []
+def summarize_chunks(chunks, llm_call, prompt):
+    """
+    Always returns a DICT that matches FastAPI response schema
+    """
 
-    for part in chunks:
-        summary = f"{prompt}\n\n🔹 {part[:200]}..."  # mock summary
-        summaries.append(summary)
+    # Call LLM once (mocked for now)
+    llm_output = llm_call(" ".join(chunks), prompt)
 
-    final = "\n".join(summaries)
+    bullets = [
+        line.strip("-• ").strip()
+        for line in llm_output.split("\n")
+        if len(line.strip()) > 10
+    ][:7]
 
-    key_points = [f"Point {i+1}: extracted summary" for i in range(3)] if summary_type!="risk" else []
-    risk = ["⚠ Note: Risk-related section here"] if summary_type=="risk" else []
+    risk_notes = [
+        b for b in bullets
+        if any(k in b.lower() for k in ["suspend", "terminate", "risk", "liable"])
+    ]
 
-    return final, key_points, risk
+    return {
+        "summary": " ".join(bullets),
+        "key_points": bullets,          # ✅ LIST
+        "risk_notes": risk_notes        # ✅ LIST
+    }
+

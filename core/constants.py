@@ -1,7 +1,24 @@
+SUMMARY_PROMPTS = {
+    "simple": """
+You are a legal document summarizer for normal users.
+
+STRICT RULES:
+- Output ONLY 5 to 7 bullet points.
+- Each bullet must be ONE short sentence.
+- Use very simple, non-legal language.
+- Ignore addresses, company locations, headings, and boilerplate.
+- Do NOT repeat instructions or prompts.
+- Do NOT repeat similar points.
+- Focus ONLY on:
+  • User responsibilities
+  • Platform rights
+  • Account rules
+  • Suspension or termination risks
+  • Legal or financial risks
+
+Return ONLY bullet points.
+"""
+}
+
 DEFAULT_SUMMARY_TYPE = "simple"
 
-SUMMARY_PROMPTS = {
-    "simple": "Summarize the following Terms & Conditions in short bullet points.",
-    "simplified": "Explain this Terms & Conditions in very simple easy to understand language.",
-    "risk": "Summarize Terms & Conditions and highlight risks, penalties & user responsibilities clearly."
-}

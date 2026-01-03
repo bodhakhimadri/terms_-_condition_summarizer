@@ -1,15 +1,11 @@
-def chunk_text(text: str, max_length: int = 1200):
+def chunk_text(text: str, max_words: int = 350):
     words = text.split()
     chunks = []
-    current = []
 
-    for word in words:
-        if sum(len(w) for w in current) + len(word) > max_length:
-            chunks.append(" ".join(current))
-            current = []
-        current.append(word)
-
-    if current:
-        chunks.append(" ".join(current))
+    for i in range(0, len(words), max_words):
+        chunk = " ".join(words[i:i + max_words])
+        if len(chunk) > 50:
+            chunks.append(chunk)
 
     return chunks
+
